@@ -75,7 +75,7 @@
 
 /*==================[external data declaration]==============================*/
 void IniciaRIT (void);
-void SeteaRIT (void);
+void SeteaRIT (uint32_t delay);
 void ClearRIT (void);
 
 

@@ -70,7 +70,8 @@
 #include "timer.h"
 
 /*==================[macros and definitions]=================================*/
-#define INTERVALO 100
+#define DELAY_LOW 1000
+#define DELAY_HIGH 100
 #define IRQn 11
 /*==================[internal data declaration]==============================*/
 
@@ -98,9 +99,9 @@ void IniciaRIT ()
 	Chip_RIT_Init(LPC_RITIMER);
 	NVIC_EnableIRQ(IRQn);
 }
-void SeteaRIT ()
+void SeteaRIT (uint32_t delay)
 {
-	Chip_RIT_SetTimerInterval(LPC_RITIMER,INTERVALO);
+			Chip_RIT_SetTimerInterval(LPC_RITIMER,delay);
 }
 void ClearRIT ()
 {

@@ -77,6 +77,7 @@
 void IniciaPuerto (void);
 void PrendeLed(uint8_t led);
 void ApagaLed(uint8_t led);
+void ConmutaLed(uint8_t led);
 
 /*==================[external functions declaration]=========================*/
 

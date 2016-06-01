@@ -31,8 +31,8 @@
  *
  */
 
-#ifndef LED_H
-#define LED_H
+#ifndef TECLA_H
+#define TECLA_H
 /** \brief Bare Metal example header file
  **
  ** This is a mini example of the CIAA Firmware
@@ -64,19 +64,18 @@
 /*==================[macros]=================================================*/
 #define lpc4337            1
 #define mk60fx512vlq15     2
-#define LED_R 0
-#define LED_G 1
-#define LED_B 2
-#define YELLOW 14
-#define ROJO 11
-#define GREEN 12
+#define TECLA1 8
+#define TECLA2 4
+#define TECLA3 2
+#define TECLA4 1
+
 
 /*==================[typedef]================================================*/
 
 /*==================[external data declaration]==============================*/
-void IniciaPuerto (void);
-void PrendeLed(uint8_t led);
-void ApagaLed(uint8_t led);
+void IniciaTecla (void);
+uint8_t LeeTecla(void);
+
 
 /*==================[external functions declaration]=========================*/
 

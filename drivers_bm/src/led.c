@@ -171,6 +171,29 @@ void ApagaLed(uint8_t led)
 		break;
 	}
 }
+void ConmutaLed(uint8_t led)
+{
+	switch(led){
+	case LED_R:
+		Chip_GPIO_SetPinToggle(LPC_GPIO_PORT,NUM_PUERTO_5,LED_R);
+		break;
+	case LED_G:
+		Chip_GPIO_SetPinToggle(LPC_GPIO_PORT,NUM_PUERTO_5,LED_G);
+		break;
+	case LED_B:
+		Chip_GPIO_SetPinToggle(LPC_GPIO_PORT,NUM_PUERTO_5,LED_B);
+		break;
+	case ROJO:
+		Chip_GPIO_SetPinToggle(LPC_GPIO_PORT,NUM_PUERTO_1,ROJO);
+		break;
+	case YELLOW:
+		Chip_GPIO_SetPinToggle(LPC_GPIO_PORT,NUM_PUERTO_0,YELLOW);
+		break;
+	case GREEN:
+		Chip_GPIO_SetPinToggle(LPC_GPIO_PORT,NUM_PUERTO_1,GREEN);
+		break;
+	}
+}
 
 /** @} doxygen end group definition */
 /** @} doxygen end group definition */

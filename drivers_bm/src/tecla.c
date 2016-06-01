@@ -70,23 +70,23 @@
 #include "led.h"
 
 /*==================[macros and definitions]=================================*/
-#define OUT 1
-#define PUERTO_5_LED_R 1<<0
-#define PUERTO_5_LED_G 1<<1
-#define PUERTO_5_LED_B 1<<2
-#define PUERTO_0_YELLOW 1<<14
-#define PUERTO_1_ROJO 1<<11
-#define PUERTO_1_GREEN 1<<12
-#define NUM_PUERTO_5 5
+#define IN 0
+#define PAQUETE_TECLA 1
+#define PIN_TECLA_1_0 0
+#define PIN_TECLA_1_1 1
+#define PIN_TECLA_1_2 2
+#define PIN_TECLA_1_6 6
 #define NUM_PUERTO_0 0
 #define NUM_PUERTO_1 1
-#define PAQUETE_LED 2
-#define PIN_LED_2_0 0
-#define PIN_LED_2_1 1
-#define PIN_LED_2_2 2
-#define PIN_LED_2_10 10
-#define PIN_LED_2_11 11
-#define PIN_LED_2_12 12
+#define PUERTO_0_4 1<<4
+#define PUERTO_0_8 1<<8
+#define PUERTO_0_9 1<<9
+#define PUERTO_1_9 1<<9
+#define TECLA1 8
+#define TECLA2 4
+#define TECLA3 2
+#define TECLA4 1
+
 /*==================[internal data declaration]==============================*/
 
 /*==================[internal functions declaration]=========================*/
@@ -108,69 +108,51 @@
  * \remarks This function never returns. Return value is only to avoid compiler
  *          warnings or errors.
  */
-void IniciaPuerto ()
+void IniciaTecla ()
 {
 	Chip_GPIO_Init(LPC_GPIO_PORT);
-	Chip_SCU_PinMux (PAQUETE_LED,PIN_LED_2_0,MD_PUP,FUNC4); /* Map P2 0 in GPIO5[0], LED0R y hobbled el
-	pull up*/
-	Chip_SCU_PinMux (PAQUETE_LED,PIN_LED_2_1,MD_PUP,FUNC4);
-	Chip_SCU_PinMux (PAQUETE_LED,PIN_LED_2_2,MD_PUP,FUNC4);
-	Chip_SCU_PinMux (PAQUETE_LED,PIN_LED_2_10,MD_PUP,FUNC0);
-	Chip_SCU_PinMux (PAQUETE_LED,PIN_LED_2_11,MD_PUP,FUNC0);
-	Chip_SCU_PinMux (PAQUETE_LED,PIN_LED_2_12,MD_PUP,FUNC0);
-	Chip_GPIO_SetDir(LPC_GPIO_PORT,NUM_PUERTO_5,PUERTO_5_LED_R, OUT);
-	Chip_GPIO_SetDir(LPC_GPIO_PORT,NUM_PUERTO_5,PUERTO_5_LED_G, OUT);
-	Chip_GPIO_SetDir(LPC_GPIO_PORT,NUM_PUERTO_5,PUERTO_5_LED_B, OUT);
-	Chip_GPIO_SetDir(LPC_GPIO_PORT,NUM_PUERTO_0,PUERTO_0_YELLOW, OUT);
-	Chip_GPIO_SetDir(LPC_GPIO_PORT,NUM_PUERTO_1,PUERTO_1_ROJO, OUT);
-	Chip_GPIO_SetDir(LPC_GPIO_PORT,NUM_PUERTO_1,PUERTO_1_GREEN, OUT);
+	Chip_SCU_PinMux (PAQUETE_TECLA,PIN_TECLA_1_0,MD_PUP|MD_EZI|MD_ZI,FUNC0);
+	Chip_SCU_PinMux (PAQUETE_TECLA,PIN_TECLA_1_1,MD_PUP|MD_EZI|MD_ZI,FUNC0);
+	Chip_SCU_PinMux (PAQUETE_TECLA,PIN_TECLA_1_2,MD_PUP|MD_EZI|MD_ZI,FUNC0);
+	Chip_SCU_PinMux (PAQUETE_TECLA,PIN_TECLA_1_6,MD_PUP|MD_EZI|MD_ZI,FUNC0);
+
+	Chip_GPIO_SetDir(LPC_GPIO_PORT,NUM_PUERTO_0,PUERTO_0_4,IN);
+	Chip_GPIO_SetDir(LPC_GPIO_PORT,NUM_PUERTO_0,PUERTO_0_8,IN);
+	Chip_GPIO_SetDir(LPC_GPIO_PORT,NUM_PUERTO_0,PUERTO_0_9,IN);
+	Chip_GPIO_SetDir(LPC_GPIO_PORT,NUM_PUERTO_1,PUERTO_1_9,IN);
+
 }
-void PrendeLed(uint8_t led)
+uint8_t LeeTecla(void)
 {
-	switch(led){
-	case LED_R:
-		Chip_GPIO_SetPinOutHigh(LPC_GPIO_PORT,NUM_PUERTO_5,LED_R);
-		break;
-	case LED_G:
-		Chip_GPIO_SetPinOutHigh(LPC_GPIO_PORT,NUM_PUERTO_5,LED_G);
-		break;
-	case LED_B:
-		Chip_GPIO_SetPinOutHigh(LPC_GPIO_PORT,NUM_PUERTO_5,LED_B);
-		break;
-	case ROJO:
-		Chip_GPIO_SetPinOutHigh(LPC_GPIO_PORT,NUM_PUERTO_1,ROJO);
-		break;
-	case YELLOW:
-		Chip_GPIO_SetPinOutHigh(LPC_GPIO_PORT,NUM_PUERTO_0,YELLOW);
-		break;
-	case GREEN:
-		Chip_GPIO_SetPinOutHigh(LPC_GPIO_PORT,NUM_PUERTO_1,GREEN);
-		break;
+	uint8_t tecla;
+
+	if (!Chip_GPIO_ReadPortBit(LPC_GPIO_PORT,NUM_PUERTO_0,4))
+	{
+		tecla=TECLA1;//tecla1
+		return tecla;
+	}
+	else if (!Chip_GPIO_ReadPortBit(LPC_GPIO_PORT,NUM_PUERTO_0,8))
+	{
+		tecla=TECLA2;//tecla2
+		return tecla;
+	}
+	else if (!Chip_GPIO_ReadPortBit(LPC_GPIO_PORT,NUM_PUERTO_0,9))
+	{
+		tecla=TECLA3;//tecla3
+		return tecla;
+	}
+	else if (!Chip_GPIO_ReadPortBit(LPC_GPIO_PORT,NUM_PUERTO_1,9))
+	{
+		tecla=TECLA4;//tecla4
+		return tecla;
+	}
+	else
+	{
+		return 0;
 	}
 }
-void ApagaLed(uint8_t led)
-{
-	switch(led){
-	case LED_R:
-		Chip_GPIO_SetPinOutLow(LPC_GPIO_PORT,NUM_PUERTO_5,LED_R);
-		break;
-	case LED_G:
-		Chip_GPIO_SetPinOutLow(LPC_GPIO_PORT,NUM_PUERTO_5,LED_G);
-		break;
-	case LED_B:
-		Chip_GPIO_SetPinOutLow(LPC_GPIO_PORT,NUM_PUERTO_5,LED_B);
-		break;
-	case ROJO:
-		Chip_GPIO_SetPinOutLow(LPC_GPIO_PORT,NUM_PUERTO_1,ROJO);
-		break;
-	case YELLOW:
-		Chip_GPIO_SetPinOutLow(LPC_GPIO_PORT,NUM_PUERTO_0,YELLOW);
-		break;
-	case GREEN:
-		Chip_GPIO_SetPinOutLow(LPC_GPIO_PORT,NUM_PUERTO_1,GREEN);
-		break;
-	}
-}
+
+
 
 /** @} doxygen end group definition */
 /** @} doxygen end group definition */
