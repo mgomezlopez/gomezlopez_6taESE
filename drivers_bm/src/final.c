@@ -113,8 +113,7 @@ uint8_t LeeUART (void)
 }
 void  EscribeUART (uint8_t tx)
 {
-	//chart message[]="hola...\n\r";
-	//while ((Chip_UART_ReadLineStatus(LPC_USART2) & UART_LSR_THRE) !=0))
+	//while ((Chip_UART_ReadLineStatus(LPC_USART2) & UART_LSR_THRE) !=0)
 			{
 				Chip_UART_SendByte(LPC_USART2,tx);
 			}

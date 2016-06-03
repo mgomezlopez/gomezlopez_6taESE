@@ -75,7 +75,7 @@
 
 /*==================[external data declaration]==============================*/
 void IniciaUART (void);
-wint8_t LeeUART (void);
+uint8_t LeeUART (void);
 void EscribeUART(uint8_t);
 
 /*==================[external functions declaration]=========================*/

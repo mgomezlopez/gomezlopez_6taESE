@@ -1,4 +1,4 @@
-/* Copyright 2016, XXXXXXXXX  
+/* Copyright 2016, XXXXXXXXXX
  * All rights reserved.
  *
  * This file is part of CIAA Firmware.
@@ -31,18 +31,19 @@
  *
  */
 
-/** \brief Blinking Bare Metal driver led
+#ifndef UART_H
+#define UART_H
+/** \brief Bare Metal example header file
  **
- **
+ ** This is a mini example of the CIAA Firmware
  **
  **/
 
 /** \addtogroup CIAA_Firmware CIAA Firmware
  ** @{ */
-
 /** \addtogroup Examples CIAA Firmware Examples
  ** @{ */
-/** \addtogroup Baremetal Bare Metal LED Driver
+/** \addtogroup Baremetal Bare Metal example header file
  ** @{ */
 
 /*
@@ -58,70 +59,30 @@
  */
 
 /*==================[inclusions]=============================================*/
+#include "stdint.h"
 
-#ifndef CPU
-#error CPU shall be defined
-#endif
-#if (lpc4337 == CPU)
-#include "chip.h"
-#elif (mk60fx512vlq15 == CPU)
-#else
-#endif
-#include "dac.h"
+/*==================[macros]=================================================*/
+#define lpc4337            1
+#define mk60fx512vlq15     2
+//#define LED_R 0
+//#define LED_G 1
+//#define LED_B 2
+//#define YELLOW 14
+//#define ROJO 11
+//#define GREEN 12
 
-/*==================[macros and definitions]=================================*/
-#define PUERTO 7
-#define PIN_T 1
-#define PIN_R 2
-#define BAUDIOS 115200
+/*==================[typedef]================================================*/
 
-/*==================[internal data declaration]==============================*/
+/*==================[external data declaration]==============================*/
+void IniciaUART (void);
+wint8_t LeeUART (void);
+void EscribeUART(uint8_t);
 
-/*==================[internal functions declaration]=========================*/
-
-/*==================[internal data definition]===============================*/
-
-/*==================[external data definition]===============================*/
-
-
-/*==================[internal functions definition]==========================*/
-
-/*==================[external functions definition]==========================*/
-/** \brief Main function
- *
- * This is the main entry point of the software.
- *
- * \returns 0
- *
- * \remarks This function never returns. Return value is only to avoid compiler
- *          warnings or errors.
- */
-void IniciaUART ()
-{
-	Chip_SCU_PinMux(PUERTO,PIN_T,MD_PDN,FUNC6); /*P7_1: UART2_TXD*/
-	Chip_SCU_PinMux(7,PIN_R,MD_PLN|MD_EZI|MD_ZI,FUNC6); /*P7_2: UART2_TXR*/
-	Chip_UART_Init(LPC_USART2);
-	Chip_UART_SetBaud(LPC_USART2,BAUDIOS);
-	Chip_UART_SetupFIFOS(LPC_USART2, UART_FCR_FIFO_EN|UART_FCR_TRG_LEV0);
-	Chip_UART_TXEnable(LPC_USART2);
-}
-uint8_t LeeUART (void)
-{
-	uint8_t rx;
-	rx=Chip_UART_ReadByte(LPC_USART2);
-	return rx;
-}
-void  EscribeUART (uint8_t tx)
-{
-	//chart message[]="hola...\n\r";
-	//while ((Chip_UART_ReadLineStatus(LPC_USART2) & UART_LSR_THRE) !=0))
-			{
-				Chip_UART_SendByte(LPC_USART2,tx);
-			}
-}
+/*==================[external functions declaration]=========================*/
 
 /** @} doxygen end group definition */
 /** @} doxygen end group definition */
 /** @} doxygen end group definition */
 /*==================[end of file]============================================*/
+#endif /* #ifndef MI_NUEVO_PROYECTO_H */
 

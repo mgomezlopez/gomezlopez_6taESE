@@ -75,7 +75,7 @@
 
 /*==================[external data declaration]==============================*/
 void IniciaADC (void);
-wint16_t LeeADC (void);
+uint16_t LeeADC (void);
 
 
 /*==================[external functions declaration]=========================*/
