@@ -89,57 +89,86 @@
  * \remarks This function never returns. Return value is only to avoid compiler
  *          warnings or errors.
  */
-uint8_t dec,un,rx;
-uint16_t mil,cen, resto_mil,resto_cen,resto_dec;
-int cc=0;
-int c=0;
-int d,nn;
+char cadena1[]="Ganancia:";
+char cadena2[]="Offset:";
+char cadena3[]="Maximo:";
+char cadena4[]="Minimo:";
+int cc=1;
+int c=1,i=0;
+int d;
+int nn=0;
 int n=0;
 float e=0;
-float ganancia, offset;
-float amplitud;
+float max_mil,max_cen,max_dec,max_un,resto_max_mil,resto_max_cen,resto_max_dec;
+float min_mil,min_cen,min_dec,min_un,resto_min_mil,resto_min_cen,resto_min_dec;
+float gan_mil,gan_cen,gan_dec,gan_un,resto_gan_mil,resto_gan_cen,resto_gan_dec;
+float ganancia=0.8;
+float offset=-0.2;
+float amplitud=0;
+float max=3.3;
+float min=0;
 uint16_t adc=0;
 uint32_t dac_int;
 int tecla;
 
 void ISR_RIT (void)
 	{
-	if (n<6)
-	{
-		n=n+1;
-		e=620;
-	}
-	else if (n<11)
-	{
-		n=n+1;
-		e=310;
-	}
-	else {
-		n=0;
-	}
+	if (n<6){n=n+1;e=620;}
+	else if (n<11) {n=n+1;e=310;}
+	else {n=0;}
 	dac_int=(uint32_t) e;
 	EscribeDAC(dac_int);
 	adc=LeeADC();
 	amplitud=(float) adc;
-	amplitud=ganancia*amplitud+offset;
-	if (nn<50) {
-		nn=nn+1;
-		}
-	else if (nn==50){
-		nn=0;
-		ConmutaLed(GREEN);
-		EscribeUART('M');EscribeUART('A');EscribeUART('X');EscribeUART(':');
-		EscribeUART('\n');EscribeUART('\r');
+	amplitud=(3.3/1023)*amplitud*ganancia+offset; amplitud=amplitud*100;
+	if (amplitud<max){max=max;} else {max=amplitud;}
+	max_mil=max/1000; resto_max_mil=(int)max%1000; max_cen=resto_max_mil/100; resto_max_cen=(int)resto_max_mil%100;
+	max_dec=resto_max_cen/10; resto_max_dec=(int)resto_max_cen%10; max_un=resto_max_dec;
 
-		EscribeUART('M');EscribeUART('I');EscribeUART('N');EscribeUART(':');
-		EscribeUART('\n');EscribeUART('\r');
+	if (amplitud>min){min=min;} else {min=amplitud;}
+	min_mil=min/1000; resto_min_mil=(int)min%1000; min_cen=resto_min_mil/100; resto_min_cen=(int)resto_min_mil%100;
+	min_dec=resto_min_cen/10; resto_min_dec=(int) resto_min_cen% 10; min_un=resto_min_dec;
 
-		EscribeUART('G');EscribeUART('A');EscribeUART('N');EscribeUART(':');
-		EscribeUART('\n');EscribeUART('\r');
+	gan_mil=ganancia/1000; resto_gan_mil=(int)ganancia%1000; gan_cen=resto_gan_mil/100; resto_gan_cen=(int)resto_gan_mil%100;
+	gan_dec=resto_gan_cen/10; resto_gan_dec=(int) resto_gan_cen% 10; gan_un=resto_gan_dec;
 
-		EscribeUART('O');EscribeUART('F');EscribeUART('F');EscribeUART('S');
-		EscribeUART('E');EscribeUART('T');EscribeUART(':');	EscribeUART('\n');EscribeUART('\r');
-	}
+	if (nn<50) {nn=nn+1;}
+	if (nn==46){for (i=0;i<=6;i++){EscribeUART(cadena3[i]);}
+		EscribeUART(max_mil+'0');EscribeUART('.');EscribeUART(max_cen+'0');EscribeUART(max_dec+'0');
+		EscribeUART(max_un+'0');EscribeUART('\n');EscribeUART('\r');}
+	if (nn==47){for (i=0;i<=6;i++){EscribeUART(cadena4[i]);}
+		EscribeUART(min_mil+'0');EscribeUART('.');EscribeUART(min_cen+'0');EscribeUART(min_dec+'0');
+		EscribeUART(min_un+'0');EscribeUART('\n');EscribeUART('\r');}
+	if (nn==48){for (i=0;i<=9;i++){EscribeUART(cadena1[i]);}
+		switch(c){
+				case 1:
+					EscribeUART('0');EscribeUART('.');EscribeUART('8'); break;
+				case 2:
+					EscribeUART('0');EscribeUART('.');EscribeUART('9'); break;
+				case 3:
+					EscribeUART('1');EscribeUART('.');EscribeUART('0'); break;
+				case 4:
+					EscribeUART('1');EscribeUART('.');EscribeUART('1'); break;
+				case 5:
+					EscribeUART('1');EscribeUART('.');EscribeUART('2');	break;
+				}
+				if (c>5) {EscribeUART('1');EscribeUART('.');EscribeUART('2');}EscribeUART('\n');EscribeUART('\r');}
+
+	if (nn==49){for (i=0;i<=6;i++){EscribeUART(cadena2[i]);}
+		switch(cc){
+			case 1:
+				EscribeUART('-');EscribeUART('0');EscribeUART('.');EscribeUART('2'); break;
+			case 2:
+				EscribeUART('-');EscribeUART('0');EscribeUART('.');EscribeUART('1'); break;
+			case 3:
+				EscribeUART('0');EscribeUART('.');EscribeUART('0'); break;
+			case 4:
+				EscribeUART('+');EscribeUART('0');EscribeUART('.');EscribeUART('1'); break;
+			case 5:
+				EscribeUART('+');EscribeUART('0');EscribeUART('.');EscribeUART('2'); break;
+			}
+		if (cc>5) {EscribeUART('1');EscribeUART('.');EscribeUART('2');}	EscribeUART('\n');EscribeUART('\r');}
+	if (nn==50){nn=0;ConmutaLed(GREEN);}
 	ClearRIT();
 	}
 int main(void)
@@ -153,89 +182,45 @@ int main(void)
 	IniciaTecla();
 
 	for(;;)
-	{
-		while (LeeTecla()==0);
+	{	max=0;min=0;
+	while (LeeTecla()==0);
 		tecla = LeeTecla();
 		for ( d = 1 ; d <= 3276700; d++ ); /*delay ()*/
 		switch(tecla)	{
 			case TECLA1:
-				if (c<6)
-				{
-				c=c+1;
-				}
-				else
-				{
-				c=c;
-				}
-				break;
+				if (c<6){c=c+1;} else {c=c;}	break;
 			case TECLA2:
-				if (c>1)
-				{
-				c=c-1;
-				}
-				else
-				{
-				c=c;
-				}
-				break;
+				if (c>1) {c=c-1;} else {c=c;} break;
 			case TECLA3:
-				//periodo=T_LOW;
-				if (cc<6)
-				{
-				cc=cc+1;
-				}
-				else
-				{
-				cc=cc;
-				}
-				break;
-
+				if (cc<6) {cc=cc+1;} else {cc=cc;} break;
 			case TECLA4:
-				if (cc>1)
-				{
-				cc=cc-1;
-				}
-				else
-				{
-				cc=cc;
-				}
-				break;
+				if (cc>1) {cc=cc-1;} else {cc=cc;} break;
 			}
 		switch(c)	{
 					case 1:
-						ganancia=0.8;
-						break;
+						ganancia=0.8; break;
 					case 2:
-						ganancia=0.9;
-						break;
+						ganancia=0.9; break;
 					case 3:
-						ganancia=1;
-						break;
+						ganancia=1; break;
 					case 4:
-						ganancia=1.1;
-						break;
+						ganancia=1.1; break;
 					case 5:
-						ganancia=1.2;
-						break;
+						ganancia=1.2; break;
 					}
 		switch(cc)	{
 					case 1:
-						offset-0.2;
-						break;
+						offset=-0.2; break;
 					case 2:
-						offset=-0.1;
-						break;
+						offset=-0.1; break;
 					case 3:
-						offset=0;
-						break;
+						offset=0; break;
 					case 4:
-						offset=0.1;
-						break;
+						offset=0.1;	break;
 					case 5:
-						offset=0.2;
-						break;
+						offset=0.2; break;
 					}
-	}
+		}
 }
 
 /** @} doxygen end group definition */
